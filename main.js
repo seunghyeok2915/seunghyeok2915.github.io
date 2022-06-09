@@ -1,5 +1,7 @@
 let target = document.querySelector("#dynamic");
-
+let toggleBtn = document.querySelector('.navbar_toggleBtn');
+let menu = document.querySelector('.navbar_menu');
+let icons = document.querySelector('.navbar_icons');
 
 function randomString() {
     let stringArr = ["Learn to HTML", "Learn to JavaScript", "Learn to Python"]
@@ -38,3 +40,8 @@ function blink() {
 }
 
 setInterval(blink, 500);
+
+toggleBtn.addEventListener('click', () => {
+    menu.classList.toggle('active');
+    icons.classList.toggle('active');
+});
