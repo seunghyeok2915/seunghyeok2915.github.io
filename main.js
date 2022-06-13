@@ -45,3 +45,9 @@ toggleBtn.addEventListener('click', () => {
     menu.classList.toggle('active');
     icons.classList.toggle('active');
 });
+
+document.body.addEventListener("mousemove", function (e) {
+    console.log(e);
+    document.querySelector('.ghost').style.left = e.pageX - 55 + 'px';
+    document.querySelector('.ghost').style.top = e.pageY - 500 + 'px';
+});
