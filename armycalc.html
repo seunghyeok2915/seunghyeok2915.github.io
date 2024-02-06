@@ -79,12 +79,6 @@
             min-width: 50px; /* 최소 너비 설정 */
             text-align: center;
         }
-        .progress-bar-text.outside {
-            color: #333; /* 바의 외부에 있을 때 색상 */
-            left: auto;
-            right: 10px; /* 우측 패딩 대신 사용 */
-            transform: translateX(0); /* 중앙 정렬 해제 */
-        }
     </style>
 </head>
 <body>
@@ -121,18 +115,16 @@
                 document.getElementById('endDate').innerText = `근무 종료 날짜: ${resultDate}`;
                 document.getElementById('remainingDays').innerText = `남은 근무일: ${remainingDays}일`;
                 document.getElementById('progressBar').style.width = `${progress}%`;
-                document.getElementById('progressBar').innerText = `${progress}% 진행`;
 
-                // 진행률 텍스트 위치 조정을 위한 로직 추가
                 const progressText = document.getElementById('progressText');
+                // 진행률이 10% 미만이면 텍스트를 바의 오른쪽 외부로 배치
                 if (progress < 10) {
-                    // 진행률이 10% 미만이면 텍스트를 바의 오른쪽 외부로 배치
                     progressText.style.transform = 'translate(100%, -50%)';
-                    progressText.style.right = '0'; // 오른쪽 정렬
+                    progressText.style.right = '0';
                 } else {
                     // 진행률이 10% 이상이면 텍스트를 바의 내부 오른쪽으로 배치
                     progressText.style.transform = 'translate(-100%, -50%)';
-                    progressText.style.right = progress + '%'; // 진행 상태 바에 맞춰 위치 조정
+                    progressText.style.right = `${progress}%`;
                 }
 
             } else {
