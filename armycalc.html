@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산업기능요원 근무 기간 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>산업기능요원 근무 기간 계산기</h2>
+        <input type="date" id="startDate" />
+        <button onclick="calculateEndDate()">근무 종료 날짜 계산</button>
+        <div class="result" id="endDate"></div>
+        <div class="result" id="remainingDays"></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+    </div>
+
+    <script>
+        function calculateEndDate() {
+            const startDate = document.getElementById('startDate').valueAsDate;
+            if (startDate) {
+                const today = new Date();
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + 34); // 23개월을 더합니다.
+
+                const resultDate = endDate.toISOString().split('T')[0];
+                const remainingTime = endDate - today;
+                const remainingDays = Math.round(remainingTime / (1000 * 60 * 60 * 24));
+                const elapsedDays = Math.round((today - startDate) / (1000 * 60 * 60 * 24));
+                const totalDays = Math.round(34 * 30.44); // 전체 근무 기간을 일로 환산
+
+                const progress = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100)).toFixed(2);
+
+                document.getElementById('endDate').innerText = `근무 종료 날짜: ${resultDate}`;
+                document.getElementById('remainingDays').innerText = `남은 근무일: ${remainingDays}일`;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                document.getElementById('progressBar').innerText = `${progress}% 진행`;
+            } else {
+                alert('시작 날짜를 선택해주세요.');
+            }
+        }
+    </script>
+</body>
+</html>
