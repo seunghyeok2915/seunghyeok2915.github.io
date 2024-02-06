@@ -85,13 +85,13 @@
             if (startDate) {
                 const today = new Date();
                 const endDate = new Date(startDate);
-                endDate.setMonth(endDate.getMonth() + 23); // 23개월을 더합니다.
+                endDate.setMonth(endDate.getMonth() + 34); // 23개월을 더합니다.
 
                 const resultDate = endDate.toISOString().split('T')[0];
                 const remainingTime = endDate - today;
                 const remainingDays = Math.round(remainingTime / (1000 * 60 * 60 * 24));
                 const elapsedDays = Math.round((today - startDate) / (1000 * 60 * 60 * 24));
-                const totalDays = Math.round(23 * 30.44); // 전체 근무 기간을 일로 환산
+                const totalDays = Math.round(34 * 30.44); // 전체 근무 기간을 일로 환산
 
                 const progress = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100)).toFixed(2);
 
