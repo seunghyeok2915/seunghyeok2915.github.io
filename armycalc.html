@@ -6,41 +6,68 @@
     <title>산업기능요원 근무 기간 계산기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* 기존 스타일은 유지하고 진행 상태 바와 관련된 스타일만 추가/수정합니다. */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input, button {
+            width: 80%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
         .progress-container {
             width: 100%;
             background-color: #e0e0e0;
             border-radius: 20px;
-            position: relative; /* 상대적 위치 지정 */
             margin-top: 20px;
         }
         .progress-bar {
-            width: 0%;
+            width: 1%;
             height: 30px;
             background-color: #4CAF50;
             border-radius: 20px;
-            position: absolute; /* 절대적 위치 지정 */
-            overflow: hidden; /* 텍스트가 바를 벗어나지 않도록 처리 */
-        }
-        .progress-bar-text {
-            min-width: 50px; /* 최소 텍스트 너비를 지정하여 외부로 벗어날 공간 확보 */
-            position: absolute;
+            text-align: center;
             line-height: 30px;
             color: white;
-            left: 50%; /* 중앙 정렬 */
-            transform: translateX(-50%); /* 정확한 중앙 */
-            white-space: nowrap; /* 텍스트가 바깥으로 벗어나지 않도록 처리 */
-        }
-        .progress-bar-text.outside {
-            color: #333; /* 바의 외부에 있을 때 색상 */
-            left: auto;
-            right: 10px; /* 우측 패딩 대신 사용 */
-            transform: translateX(0); /* 중앙 정렬 해제 */
         }
     </style>
 </head>
 <body>
-    <!-- HTML 구조는 기존과 동일하며, 진행률 텍스트에 대한 클래스를 추가합니다. -->
     <div class="container">
         <h2>산업기능요원 근무 기간 계산기</h2>
         <input type="date" id="startDate" />
@@ -48,9 +75,7 @@
         <div class="result" id="endDate"></div>
         <div class="result" id="remainingDays"></div>
         <div class="progress-container">
-            <div class="progress-bar" id="progressBar">
-                <span class="progress-bar-text" id="progressText">0%</span>
-            </div>
+            <div class="progress-bar" id="progressBar">0%</div>
         </div>
     </div>
 
@@ -60,31 +85,24 @@
             if (startDate) {
                 const today = new Date();
                 const endDate = new Date(startDate);
-                endDate.setMonth(endDate.getMonth() + 34); // 23개월을 더합니다.
+                endDate.setMonth(endDate.getMonth() + 23); // 23개월을 더합니다.
+
                 const resultDate = endDate.toISOString().split('T')[0];
                 const remainingTime = endDate - today;
                 const remainingDays = Math.round(remainingTime / (1000 * 60 * 60 * 24));
                 const elapsedDays = Math.round((today - startDate) / (1000 * 60 * 60 * 24));
-                const totalDays = Math.round(34 * 30.44); // 전체 근무 기간을 일로 환산
+                const totalDays = Math.round(23 * 30.44); // 전체 근무 기간을 일로 환산
 
                 const progress = Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100)).toFixed(2);
 
-                const progressBar = document.getElementById('progressBar');
-                const progressText = document.getElementById('progressText');
-
-                progressBar.style.width = `${progress}%`;
-                progressText.innerText = `${progress}% 진행`;
-
-                if (progress < 5) {
-                    progressText.classList.add('outside'); // 진행률이 5% 미만일 때 outside 클래스 추가
-                } else {
-                    progressText.classList.remove('outside'); // 진행률이 5% 이상일 때 outside 클래스 제거
-                }
-
                 document.getElementById('endDate').innerText = `근무 종료 날짜: ${resultDate}`;
                 document.getElementById('remainingDays').innerText = `남은 근무일: ${remainingDays}일`;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                document.getElementById('progressBar').innerText = `${progress}% 진행`;
             } else {
                 alert('시작 날짜를 선택해주세요.');
             }
         }
     </script>
+</body>
+</html>
