@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* 폰트 적용 및 기본 스타일 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle at top, #ffe3ee, #f9cde2 60%, #f7bfd9);
+            margin: 0;
+            overflow: hidden;
+            /* 스크롤 방지 */
+            font-family: 'Nanum Pen Script', cursive;
+            text-align: center;
+            color: #555;
+            font-size: 20px;
+            /* 기본 폰트 크기 증가 */
+        }
+
+        /* 공통 버튼 스타일 */
+        .btn {
+            background: linear-gradient(135deg, #ff8a80, #ff5252);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            /* 버튼 크기 증가 */
+            font-size: 24px;
+            /* 버튼 폰트 증가 */
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 82, 82, 0.4);
+            font-family: 'Nanum Pen Script', cursive;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255, 82, 82, 0.3);
+        }
+
+        /* 화면 전환용 유틸리티 */
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 1. 잠금 화면 (Lock Screen) */
+        #lock-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            /* 배경 흐림 효과 */
+        }
+
+        .lock-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .lock-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 42px;
+            /* 타이틀 크기 증가 */
+            color: #d32f2f;
+            margin-bottom: 15px;
+        }
+
+        /* 잠금 화면 안내 문구 폰트 */
+        #lock-screen p {
+            font-size: 26px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* 2. 퀴즈 모달 (Quiz Modal) */
+        #quiz-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+            background: rgba(0, 0, 0, 0.5);
+            transition: opacity 0.5s;
+            /* 어두운 배경 */
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .quiz-question {
+            font-size: 32px;
+            /* 질문 폰트 증가 */
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .quiz-input {
+            width: 80%;
+            padding: 12px;
+            font-size: 28px;
+            /* 입력창 폰트 증가 */
+            border: 2px solid #ffcdd2;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Nanum Pen Script', cursive;
+            outline: none;
+            transition: border-color 0.3s;
+            ime-mode: disabled;
+            /* 숫자 입력 유도 */
+        }
+
+        .quiz-input:focus {
+            border-color: #ff5252;
+        }
+
+        .error-msg {
+            color: #e53935;
+            font-size: 20px;
+            /* 에러 메시지 폰트 증가 */
+            margin-top: 15px;
+            height: 20px;
+            /* 공간 확보 */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* 애니메이션 정의 */
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes popUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        /* 3. 메인 컨텐츠 (Envelope Wrapper) - 초기 숨김 */
+        #main-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 500;
+            /* 잠금화면보다 낮지만 보이게 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 기존 스타일 유지 및 통합 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -20%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0 2px, transparent 2px 100%);
+            background-size: 80px 80px;
+            opacity: 0.3;
+            animation: drift 18s linear infinite;
+            pointer-events: none;
+        }
+
+        body.open {
+            background: radial-gradient(circle at top, #fff1c9, #ffd7a6 55%, #ffc2d8);
+        }
+
+        /* 봉투 전체 컨테이너 */
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            margin: auto;
+            /* 중앙 정렬 */
+            max-width: 90vw;
+            /* 모바일 화면에 맞춤 */
+            transition: transform 0.3s;
+            /* 터치 시 반응 효과 */
+            animation: floaty 3.5s ease-in-out infinite;
+        }
+
+        /* 터치 시 살짝 커지는 효과 */
+        .envelope-wrapper:active {
+            transform: scale(0.98);
+        }
+
+        /* 봉투 본체 */
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #ff8a80;
+            /* 봉투 기본 색상 (진한 살구색) */
+            border-radius: 5px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            /* 삼각형 경계선 틈새 숨김 */
+        }
+
+        /* 봉투의 작은 봉인 */
+        .seal {
+            position: absolute;
+            top: 86px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffb6c1, #e53935);
+            color: #fff0f0;
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            line-height: 48px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            z-index: 55;
+            animation: pulse 1.8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* 봉투 뚜껑 (가장 위) */
+        .lid {
+            position: absolute;
+            top: -2px;
+            /* 서브픽셀 틈새 방지 */
+            left: -2px;
+            width: 0;
+            height: 0;
+            z-index: 50;
+            /* 가장 높은 z-index */
+            border-left: 152px solid transparent;
+            border-right: 152px solid transparent;
+            border-top: 102px solid #ff5252;
+            /* 뚜껑 색상 (붉은색) */
+            transform-origin: top;
+            transition: transform 0.5s ease-in-out;
+            /* 뚜껑 열리는 애니메이션 */
+        }
+
+        /* 삼각형 면을 덮는 실질 뚜껑 (clip-path) */
+        .lid-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 110px;
+            background: #ff5252;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            z-index: 49;
+            pointer-events: none;
+            transform-origin: top;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* 봉투 앞면 - 아래 주머니 */
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: -2px;
+            width: 0;
+            height: 0;
+            z-index: 40;
+            /* 편지보다 위, 뚜껑보다는 아래 */
+            border-left: 152px solid transparent;
+            border-right: 152px solid transparent;
+            border-bottom: 122px solid #ff9e80;
+            /* 주머니 색상 (약간 밝은 살구색) */
+            border-radius: 0 0 5px 5px;
+            pointer-events: none;
+            /* 클릭 이벤트 통과 */
+        }
+
+        /* 봉투 앞면 - 왼쪽 날개 */
+        .flap-left {
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 0;
+            height: 0;
+            z-index: 30;
+            /* 편지보다 위 */
+            border-top: 102px solid transparent;
+            border-bottom: 102px solid transparent;
+            border-left: 152px solid #ff8a80;
+            /* 날개 색상 */
+            border-radius: 5px 0 0 5px;
+            pointer-events: none;
+        }
+
+        /* 봉투 앞면 - 오른쪽 날개 */
+        .flap-right {
+            position: absolute;
+            top: 0;
+            right: -2px;
+            width: 0;
+            height: 0;
+            z-index: 30;
+            /* 편지보다 위 */
+            border-top: 102px solid transparent;
+            border-bottom: 102px solid transparent;
+            border-right: 152px solid #ff8a80;
+            /* 날개 색상 */
+            border-radius: 0 5px 5px 0;
+            pointer-events: none;
+        }
+
+        /* 편지지 (초기에는 숨겨짐) */
+        .letter {
+            position: absolute;
+            /* 봉투 내부에 완전히 숨겨지도록 위치 조정 */
+            bottom: 10px;
+            left: 15px;
+            width: 270px;
+            height: 180px;
+            background-color: #fff;
+            /* 편지지 색상 (흰색) */
+            border-radius: 5px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            /* 봉투 앞면 요소들보다 낮은 z-index */
+            opacity: 0;
+            transform: translateY(140px);
+            /* 봉투 안쪽 아래에서 시작 */
+            transition: transform 0.8s 0.15s ease-in-out, opacity 0.65s 0.15s ease-in-out, z-index 0.2s 0.6s;
+            /* 편지 올라오는 애니메이션 (딜레이 포함) */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 편지 내용이 넘치지 않도록 숨김 */
+            overflow: hidden;
+        }
+
+        /* 편지 내용 스타일 */
+        .letter h2 {
+            margin: 0 0 15px 0;
+            font-family: 'Dancing Script', cursive;
+            color: #d32f2f;
+            /* 제목 색상 (진한 붉은색) */
+            font-size: 28px;
+        }
+
+        .letter p {
+            font-size: 18px;
+            color: #555;
+            /* 본문 색상 (회색) */
+            text-align: center;
+            line-height: 1.6;
+            margin: 0;
+            width: 100%;
+            word-break: keep-all;
+            /* 단어 단위 줄바꿈 */
+        }
+
+        /* 봉투가 열렸을 때 스타일 변경 */
+        .envelope-wrapper.open .lid {
+            transform: rotateX(180deg);
+            /* 뚜껑이 뒤로 열림 */
+            z-index: 5;
+            /* 뚜껑 z-index 낮춤 */
+        }
+
+        .envelope-wrapper.open .lid-fill {
+            transform: rotateX(180deg);
+            z-index: 4;
+        }
+
+        .envelope-wrapper.open .letter {
+            transform: translateY(-140px);
+            /* 편지가 위로 올라옴 */
+            z-index: 60;
+            /* 편지가 가장 앞으로 나옴 */
+            height: 350px;
+            /* 편지 높이 증가 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            /* 그림자 효과 강화 */
+            overflow: visible;
+            /* 내용이 넘쳐도 보이도록 변경 */
+            animation: pop 0.8s ease-out 0.5s both;
+            opacity: 1;
+        }
+
+        /* 열렸을 때는 편지가 밖으로 나올 수 있도록 허용 */
+        .envelope-wrapper.open .envelope {
+            overflow: visible;
+        }
+
+        .envelope-wrapper.open .seal {
+            transform: translateX(-50%) scale(0.4);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .mystery-text {
+            margin-top: 18px;
+            font-size: 18px;
+            color: #6b5b5b;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .envelope-wrapper.open .mystery-text {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        /* 편지 내부 내용 */
+        .letter-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transform: translateY(40px);
+            opacity: 0;
+            transition: transform 0.55s 0.65s ease-out, opacity 0.55s 0.65s ease-out;
+        }
+
+        /* 하이픈 및 이름 */
+        .signature {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .surprise {
+            margin-top: 18px;
+            font-size: 20px;
+            color: #e53935;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.4s ease 1s, transform 0.4s ease 1s;
+        }
+
+        .envelope-wrapper.open .letter-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .envelope-wrapper.open .surprise {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 하트 애니메이션 효과 */
+        .heart {
+            position: absolute;
+            color: #e91e63;
+            /* 하트 색상 (분홍색) */
+            animation: float 4s linear infinite;
+            /* 떠오르는 애니메이션 */
+            opacity: 0;
+            z-index: 100;
+            /* 가장 높은 z-index */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floaty {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translateX(-50%) scale(1);
+            }
+
+            50% {
+                transform: translateX(-50%) scale(1.06);
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: translateY(-120px) scale(0.98);
+            }
+
+            100% {
+                transform: translateY(-120px) scale(1);
+            }
+        }
+
+        /* 4. 편지 팝업 (전체 화면) */
+        #letter-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            /* 가장 위 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #letter-popup.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .letter-paper {
+            width: 85%;
+            max-width: 500px;
+            max-height: 80vh;
+            /* 화면 높이의 80% */
+            background: #fff;
+            padding: 40px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            /* 내용 길면 스크롤 */
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            position: relative;
+            background-image: linear-gradient(#eee .1rem, transparent .1rem);
+            background-size: 100% 2rem;
+        }
+
+        #letter-popup.visible .letter-paper {
+            transform: scale(1);
+        }
+
+        .letter-paper h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #d32f2f;
+            font-size: 42px;
+            /* 편지 제목 크기 증가 */
+            margin-bottom: 25px;
+            line-height: 2rem;
+        }
+
+        .letter-paper p {
+            font-size: 28px;
+            /* 편지 본문 크기 증가 */
+            color: #333;
+            line-height: 2.2rem;
+            margin-bottom: 40px;
+            word-break: keep-all;
+        }
+
+        .close-btn {
+            margin-top: 20px;
+            background: #aaa;
+            padding: 8px 20px;
+            font-size: 16px;
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(40px, 40px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. 잠금 화면 -->
+    <div id="lock-screen">
+        <div class="lock-icon">🎁</div>
+        <div class="lock-title">특별한 선물 도착</div>
+        <p>아림님 앞으로 선물이 도착했습니다.<br>본인 확인 후 수령 가능합니다.</p>
+        <button class="btn" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"
+            onclick="showQuiz()">본인 확인하기</button>
+    </div>
+
+    <!-- 2. 퀴즈 모달 -->
+    <div id="quiz-modal" class="hidden">
+        <div class="quiz-card">
+            <div class="quiz-question">본인 확인<br><span style="font-size:20px !important; color:#777;">생년월일 8자리를
+                    입력해주세요</span></div>
+            <input type="text" id="quiz-input" class="quiz-input" placeholder="YYYYMMDD" maxlength="8"
+                inputmode="numeric" onkeypress="if(event.key === 'Enter') {checkDate();}">
+            <div id="error-msg" class="error-msg">날짜가 틀렸어! 다시 생각해봐 ❤️</div>
+            <button class="btn" onclick="checkDate()">확인</button>
+        </div>
+    </div>
+
+    <!-- 3. 메인 봉투 (초기에 숨김) -->
+    <div id="main-content" class="hidden">
+        <div class="envelope-wrapper" onclick="openLetter()">
+            <div class="envelope">
+                <div class="lid"></div>
+                <div class="lid-fill"></div>
+                <div class="pocket"></div>
+                <div class="flap-left"></div>
+                <div class="flap-right"></div>
+
+                <div class="seal">❤</div>
+            </div>
+            <div class="mystery-text">눌러서 편지를 열어봐!</div>
+        </div>
+    </div>
+
+    <!-- 4. 편지 내용 팝업 -->
+    <div id="letter-popup">
+        <div class="letter-paper">
+            <h2>Happy Birthday!</h2>
+            <p>
+                00아 생일 축하해 💛<br>
+
+                00이 생일 다시 한 번 너무 축하하고,<br>
+
+                우리 앞으로도 오래오래 예쁘게 만나자.<br>
+                사랑해.<br>
+            </p>
+            <div class="signature" style="font-size: 24px;">- 승혁이가 -</div>
+            <div class="surprise" style="opacity: 1; transform: none; margin-top:30px; color:#e53935; font-size: 26px;">
+                🎉 자기를 위한 작은
+                서프라이즈!</div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 설정
+        // 전역 설정
+        const SECRET_DATE_1 = "20020201"; // 생년월일
+        const SECRET_DATE_2 = "20250119"; // 처음 만난 날
+        let quizStep = 1; // 1: 생일, 2: 만난 날
+        let isLetterOpen = false;
+
+        // 퀴즈 화면 보여주기
+        function showQuiz() {
+            const lockScreen = document.getElementById('lock-screen');
+            const quizModal = document.getElementById('quiz-modal');
+
+            lockScreen.style.opacity = '0';
+            setTimeout(() => {
+                lockScreen.classList.add('hidden');
+                quizModal.classList.remove('hidden');
+            }, 300);
+        }
+
+        // 날짜 확인하기
+        function checkDate() {
+            const input = document.getElementById('quiz-input');
+            const val = input.value.trim();
+            const errorMsg = document.getElementById('error-msg');
+            const quizCard = document.querySelector('.quiz-card');
+            const questionDiv = document.querySelector('.quiz-question');
+
+            if (quizStep === 1) {
+                if (val === SECRET_DATE_1) {
+                    // 1단계 통과 -> 2단계로 변경
+                    quizStep = 2;
+                    input.value = ''; // 입력창 초기화
+                    errorMsg.style.opacity = '0'; // 에러 메시지 초기화
+
+                    // 질문 변경 애니메이션
+                    questionDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        questionDiv.innerHTML = '본인 확인 2단계<br><span style="font-size:20px !important; color:#777;">우리가 처음 사귄 날은?</span>';
+                        questionDiv.style.opacity = '1';
+                        input.placeholder = "YYYYMMDD";
+                        input.focus();
+                    }, 300);
+                } else {
+                    showError(errorMsg, quizCard);
+                }
+            } else if (quizStep === 2) {
+                if (val === SECRET_DATE_2) {
+                    // 2단계 통과 -> 편지 열기
+                    unlockLetter();
+                } else {
+                    showError(errorMsg, quizCard);
+                }
+            }
+        }
+
+        function showError(errorMsg, quizCard) {
+            errorMsg.style.opacity = '1';
+            quizCard.classList.add('shake');
+            setTimeout(() => {
+                quizCard.classList.remove('shake');
+                errorMsg.style.opacity = '0';
+            }, 1000);
+        }
+
+        // 편지 잠금 해제
+        function unlockLetter() {
+            const quizModal = document.getElementById('quiz-modal');
+            const mainContent = document.getElementById('main-content');
+
+            // 퀴즈 모달 즉시 숨김 처리 시작
+            quizModal.style.opacity = '0';
+
+            // 메인 컨텐츠 드러내기
+            mainContent.classList.remove('hidden');
+            mainContent.style.zIndex = '1500'; // z-index 최상위로 올림
+
+            setTimeout(() => {
+                quizModal.classList.add('hidden'); // 완전히 숨김
+                mainContent.style.opacity = '1';
+            }, 300);
+        }
+
+        // 봉투 열기 (기존 함수 수정)
+        function openLetter() {
+            if (isLetterOpen) return;
+            isLetterOpen = true;
+
+            const envelope = document.querySelector('.envelope-wrapper');
+            envelope.classList.add('open');
+            document.body.classList.add('open');
+
+            // 미스터리 텍스트 숨기기
+            const mysteryText = document.querySelector('.mystery-text');
+            if (mysteryText) mysteryText.style.opacity = '0';
+
+            createHearts();
+
+            // 1초 뒤에 팝업 띄우기
+            setTimeout(() => {
+                const popup = document.getElementById('letter-popup');
+                popup.classList.add('visible');
+            }, 1000);
+        }
+
+        // 하트 생성 함수
+        function createHearts() {
+            const container = document.body;
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤';
+                    heart.classList.add('heart');
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                    heart.style.fontSize = Math.random() * 15 + 15 + 'px';
+                    heart.style.top = '100vh';
+                    container.appendChild(heart);
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+
+</html>
